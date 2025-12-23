@@ -11,7 +11,7 @@ from dropbox_upload import upload_to_dropbox
 
 def do_minute_changed(file_prefix, date_time_now, co2, temperature, relative_humidity):
     with open(f"{file_prefix}.csv", "a") as out:
-        out.write(f"{date_time_now},{co2},{temperature},{relative_humidity}")
+        out.write(f"{date_time_now},{co2:.2f},{temperature:.2f},{relative_humidity:.2f}\n")
 
 
 def do_day_changed(file_prefix):
