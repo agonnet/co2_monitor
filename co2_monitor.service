@@ -1,0 +1,14 @@
+[Unit]
+Description=co2 monitor service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=monpi
+ExecStart=/home/monpi/co2_monitor/run_monitor.sh
+
+[Install]
+WantedBy=multi-user.target
