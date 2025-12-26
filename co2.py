@@ -2,8 +2,9 @@ import gzip
 import os
 import shutil
 from datetime import datetime, timezone
-import time
 from statistics import mean
+
+from scd4x import SCD4X
 
 from dropbox_upload import upload_to_dropbox
 
@@ -13,9 +14,10 @@ def do_minute_changed(file_prefix, date_time_now, n, co2, temperature, relative_
         out.write(f"{date_time_now},{n},{co2:.2f},{temperature:.2f},{relative_humidity:.2f}\n")
 
 
-def gzip_csvs():
+def gzip_csvs(_exclude_prefix):
     for file_name in os.listdir("."):
-        if file_name.endswith(".csv"):
+        if file_name.endswith(".csv") and \
+            (_exclude_prefix is None or not file_name.startswith(_exclude_prefix)):
             csv_name = file_name
             gz_name = f"{csv_name}.gz"
             # GZIP the csv data
@@ -25,18 +27,19 @@ def gzip_csvs():
             os.remove(csv_name)
 
 
-def upload_gzips():
+def upload_gzips(_exclude_prefix):
     for file_name in os.listdir("."):
-        if file_name.endswith(".gz"):
+        if file_name.endswith(".gz") and \
+            (_exclude_prefix is None or not file_name.startswith(_exclude_prefix)):
             gz_name = file_name
             ok = upload_to_dropbox(gz_name)
             if ok:
                 os.remove(gz_name)
 
 
-def do_day_changed(exclude_file_name = None):
-    gzip_csvs(exclude_file_name)
-    upload_gzips(exclude_file_name)
+def do_day_changed(_exclude_prefix=None):
+    gzip_csvs(_exclude_prefix)
+    upload_gzips(_exclude_prefix)
 
 
 def get_readings_loop(device):
@@ -71,15 +74,21 @@ def get_readings_loop(device):
 
 
 def log_started():
+    msg = f"restarted at {datetime.now()}"
+    
+    print(msg)
+
     with open(f"restarts.log", "a") as out:
-        out.write(f"restarted at {datetime.now()}\n")
+        out.write(f"{msg}\n")
+
     upload_to_dropbox("restarts.log")
 
 
 if __name__ == '__main__':
     log_started()
-    exclude_file_name = date_now = datetime.now().strftime("%Y.%m.%d") + ".csv"
-    do_day_changed(exclude_file_name)  # Upload anything not done previously
+
+    exclude_prefix = datetime.now().strftime("%Y.%m.%d")
+    do_day_changed(exclude_prefix)  # Upload anything not done previously
 
     device = SCD4X(quiet=False)
     device.start_periodic_measurement()
