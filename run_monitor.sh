@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -v
+# set -v
 
 cd /home/monpi/co2_monitor
 
