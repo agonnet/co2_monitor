@@ -34,9 +34,9 @@ def upload_gzips():
                 os.remove(gz_name)
 
 
-def do_day_changed():
-    gzip_csvs()
-    upload_gzips()
+def do_day_changed(exclude_file_name = None):
+    gzip_csvs(exclude_file_name)
+    upload_gzips(exclude_file_name)
 
 
 def get_readings_loop(device):
@@ -78,8 +78,9 @@ def log_started():
 
 if __name__ == '__main__':
     log_started()
-    do_day_changed()  # Upload anything not done previously
+    exclude_file_name = date_now = datetime.now().strftime("%Y.%m.%d") + ".csv"
+    do_day_changed(exclude_file_name)  # Upload anything not done previously
 
-    # device = SCD4X(quiet=False)
-    # device.start_periodic_measurement()
-    # get_readings_loop(device)
+    device = SCD4X(quiet=False)
+    device.start_periodic_measurement()
+    get_readings_loop(device)
