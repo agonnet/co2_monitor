@@ -9,9 +9,9 @@ from scd4x import SCD4X
 from dropbox_upload import upload_to_dropbox
 
 
-def do_minute_changed(file_prefix, date_time_now, co2, temperature, relative_humidity):
+def do_minute_changed(file_prefix, date_time_now, n, co2, temperature, relative_humidity):
     with open(f"{file_prefix}.csv", "a") as out:
-        out.write(f"{date_time_now},{co2:.2f},{temperature:.2f},{relative_humidity:.2f}\n")
+        out.write(f"{date_time_now},{n},{co2:.2f},{temperature:.2f},{relative_humidity:.2f}\n")
 
 
 def do_day_changed(file_prefix):
@@ -48,7 +48,7 @@ def get_readings_loop():
         date_now = now.strftime("%Y.%m.%d")
         date_time_now = now.strftime("%Y.%m.%d.%H.%M")
         if prev_date_time and prev_date_time != date_time_now:
-            do_minute_changed(date_now, date_time_now, mean(co2s), mean(temperatures), mean(relative_humidities))
+            do_minute_changed(date_now, date_time_now, len(co2s), mean(co2s), mean(temperatures), mean(relative_humidities))
             co2s = []
             temperatures = []
             relative_humidities = []
