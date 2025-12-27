@@ -6,4 +6,5 @@ cd /home/monpi/co2_monitor
 
 source ./venv/bin/activate
 
-python co2.py
+# -u = unbuffered stdout so appears in systemd logs
+python -u co2.py
