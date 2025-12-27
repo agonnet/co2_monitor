@@ -62,20 +62,23 @@ def get_readings_loop(device):
         date_now = now.strftime("%Y.%m.%d")
         date_time_now = now.strftime("%Y.%m.%d.%H.%M")
         num_readings = len(co2s)
+
+        # Do date change first as all csvs are zipped and uploaded so don't want new days csv yet
+        if prev_date and prev_date != date_now:
+            do_day_changed(prev_date)
+
         if num_readings and prev_date_time and prev_date_time != date_time_now:
             do_minute_changed(date_now, date_time_now, num_readings, mean(co2s), mean(temperatures), mean(relative_humidities))
             co2s = []
             temperatures = []
             relative_humidities = []
-        if prev_date and prev_date != date_now:
-            do_day_changed(prev_date)
         prev_date = date_now
         prev_date_time = date_time_now
 
 
 def log_started():
     msg = f"restarted at {datetime.now()}"
-    
+
     print(msg)
 
     with open(f"restarts.log", "a") as out:
