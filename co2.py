@@ -65,7 +65,7 @@ def get_readings_loop(device):
 
         # Do date change first as all csvs are zipped and uploaded so don't want new days csv yet
         if prev_date and prev_date != date_now:
-            do_day_changed(prev_date)
+            do_day_changed()
 
         if num_readings and prev_date_time and prev_date_time != date_time_now:
             do_minute_changed(date_now, date_time_now, num_readings, mean(co2s), mean(temperatures), mean(relative_humidities))
